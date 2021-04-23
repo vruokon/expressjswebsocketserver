@@ -33,6 +33,14 @@ wss.clients.forEach((client) => {
   res.sendStatus(200);
 })
 
+app.get('/jump', (req, res) => {
+ wss.clients.forEach((client) => {
+     if (client.readyState === WebSocket.OPEN) {
+       client.send('jump');
+     }
+   });
+   res.sendStatus(200);
+ })
 //start our server
 server.listen(process.env.PORT || 8080, () => {
     console.log(`Server started on port ${server.address().port} :)`);
