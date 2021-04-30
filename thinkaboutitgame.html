@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+ <html>
+<head>
+  <title>Think about it</title>
+  <style>
+      body{
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          background-color: #e4fbff;
+      }
+      body canvas{
+        -webkit-box-shadow: 0px 0px 15px -7px #000; 
+        box-shadow: 0px 0px 15px -7px #000;
+        background-color: #b8b5ff;
+        border-radius: 0.5rem;
+      }
+  </style>
+</head>
+<body>
+<script>
+
+var myGamePiece;
+var myObstacles = [];
+var myScore;
+var obstacleCreated = false;
+var gap = Math.round(Math.random()*2000);
+var rotate = true;
+var jumpHeight = 100
+
+
+function startGame() {
+    myGamePiece = new component(40, 40, "#7868e6", 60, 120, 'player');
+    myGamePiece.gravity = 0.1;
+    myGamePiece.a = 0;
+    myScore = new component("30px", "Arial", "#7868e6", 20, 40, "text");
+    myGameArea.start();
+
+
+}
+
+var myGameArea = {
+    canvas : document.createElement("canvas"),
+    start : function() {
+        this.canvas.width = window.innerWidth/1.5;
+        this.canvas.height = window.innerHeight/1.5;
+        this.context = this.canvas.getContext("2d");
+        document.body.insertBefore(this.canvas, document.body.childNodes[1]);
+        this.frameNo = 0;
+        this.interval = setInterval(updateGameArea, 20);
+        },
+    clear : function() {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+}
+
+function component(width, height, color, x, y, type) {
+    this.type = type;
+    this.score = 0;
+    this.width = width;
+    this.height = height;
+    this.speedX = 0;
+    this.speedY = 0;
+    this.x = x;
+    this.y = y;
+    this.gravity = 0;
+    this.gravitySpeed = 0;
+    this.update = function() {
+        ctx = myGameArea.context;
+        if (this.type == "text") {
+            ctx.font = this.width + " " + this.height;
+            ctx.fillStyle = color;
+            ctx.fillText(this.text, this.x, this.y);
+        } else if (type == 'player' && rotate){
+            ctx = myGameArea.context;
+            ctx.save();
+            ctx.translate(this.x+20, this.y+20);    
+            myGamePiece.a -= 50; 
+            ctx.rotate(myGamePiece.a);
+            ctx.fillStyle = '#7868e6';
+            ctx.fillRect(this.width / -2, this.height/-2, this.width, this.height);
+            ctx.restore();
+            
+        } 
+        else {
+            ctx.fillStyle = color;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+        }
+    }
+    this.newPos = function() {
+        this.gravitySpeed += this.gravity;
+        this.x += this.speedX;
+        this.y += this.speedY + this.gravitySpeed;
+        this.hitBottom();
+    }
+    this.hitBottom = function() {
+        var rockbottom = myGameArea.canvas.height - this.height;
+        if (this.y > rockbottom) {
+            this.y = rockbottom;
+            this.gravitySpeed = 0;
+            rotate = false
+        }
+    }
+    this.crashWith = function(otherobj) {
+        var myleft = this.x;
+        var myright = this.x + (this.width);
+        var mytop = this.y;
+        var mybottom = this.y + (this.height);
+        var otherleft = otherobj.x;
+        var otherright = otherobj.x + (otherobj.width);
+        var othertop = otherobj.y;
+        var otherbottom = otherobj.y + (otherobj.height);
+        var crash = true;
+        if ((mybottom < othertop) || (mytop > otherbottom) || (myright < otherleft) || (myleft > otherright)) {
+            crash = false;
+        }
+        return crash;
+    }
+}
+
+function updateGameArea() {
+    var x, height, minHeight, maxHeight;
+    for (i = 0; i < myObstacles.length; i += 1) {
+        if (myGamePiece.crashWith(myObstacles[i])) {
+            return;
+        } 
+    }
+    myGameArea.clear();
+    myGameArea.frameNo += 1;
+    if (myGameArea.frameNo == 1 || everyinterval(gap)) {
+        x = myGameArea.canvas.width;
+        height = window.innerHeight/1.5-100;
+        myObstacles.push(new component(10, x, "#edeef7", x, height));
+        gap = Math.round(Math.random()*800);
+        if(gap < 300 ) {
+            gap = 500
+        }
+
+    }
+    for (i = 0; i < myObstacles.length; i += 1) {
+        myObstacles[i].x += -1;
+        myObstacles[i].update();
+    }
+    myScore.text="SCORE: " + myGameArea.frameNo;
+    myScore.update();
+    myGamePiece.newPos();
+    myGamePiece.update();
+    if(myGameArea.canvas.height - myGamePiece.height - jumpHeight > myGamePiece.y){
+	    accelerate(0.05);
+    }
+}
+
+function everyinterval(n) {
+    if ((myGameArea.frameNo / n) % 1 == 0) {return true;}
+    return false;
+}
+
+function accelerate(n) {
+    myGamePiece.gravity = n;
+}
+// Create WebSocket connection.
+const socket = new WebSocket('ws://localhost:8080');
+
+// Connection opened
+socket.addEventListener('open', function (event) {
+    socket.send('Hello Server!');
+    startGame();
+});
+
+// Listen for messages
+socket.addEventListener('message', function (event) {
+    console.log('Message from server ', event.data);
+    if(event.data == 'jump' && rotate == false) {
+	    accelerate(-0.1);
+        rotate = true
+    } 
+});
+
+</script>
+</body>
+</html>

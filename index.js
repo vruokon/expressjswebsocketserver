@@ -21,13 +21,13 @@ wss.on('connection', (WebSocket) => {
     });
 
     //send immediatly a feedback to the incoming connection    
-    WebSocket.send('Hi there, I am a WebSocket server');
+    WebSocket.send('Hi there, I am a WebSocket server lets start jumping.');
 });
 
 app.get('/', (req, res) => {
 wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
-      client.send('hei');
+      client.send('To get qube jump send get request to /jump url.');
     }
   });
   res.sendStatus(200);
@@ -43,5 +43,5 @@ app.get('/jump', (req, res) => {
  })
 //start our server
 server.listen(process.env.PORT || 8080, () => {
-    console.log(`Server started on port ${server.address().port} :)`);
+    console.log(`Server started on port ${server.address().port}`);
 });
