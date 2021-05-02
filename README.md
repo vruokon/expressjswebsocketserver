@@ -16,15 +16,18 @@
 
 ## Starting the Game
 
+#### Emotiv
 - Connect your emotiv Headset to the EmotivBCI app.
 - Train a Lift command inside EmovitBCI app.
 
+#### Node-red
 - Start node-red: ```node-red```
-### Import thinkabout flow
 - From a node-red menu, open "Import" and select file ```./node-red-flows/flows.json``` and finally click "Imoprt"
 - Click deploy
 
-
+#### Express.js server
 - Start express.js server in thinkjs project folder: ```npm start```
+
+### Open The game
 - Open thinkaboutitgame.html in your browser and start thinking about lift command.
 
