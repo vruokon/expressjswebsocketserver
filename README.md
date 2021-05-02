@@ -20,6 +20,10 @@
 - Train a Lift command inside EmovitBCI app.
 
 - Start node-red: ```node-red```
+### Import thinkabout flow
+- From a node-red menu, open "Import" and select file ```./node-red-flows/flows.json``` and finally click "Imoprt"
+- Click deploy
+
 
 - Start express.js server in thinkjs project folder: ```npm start```
 - Open thinkaboutitgame.html in your browser and start thinking about lift command.
