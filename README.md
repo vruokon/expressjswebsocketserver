@@ -4,7 +4,7 @@
 
 ### Clone and install JavaScript game
 - Clone repository: ```git clone https://github.com/vruokon/thinkabout.git```
-- Install requirements: ```npm install``` inside project folder
+- Install requirements: ```npm install``` inside the project folder
 
 ### Install node-red and emotiv-bci plugin
 - Install node-red: ```npm install -g --unsafe-perm node-red``` may need admin privileges
